@@ -20,7 +20,7 @@ const config = {
   // ─── ⭐ Telegram Settings ─────────────────────
   //  Yahan apna Telegram Bot Token daalo
   telegram: {
-    token:     '8593320366:AAHDnxlul5aOdXZhL6R38ycoZ8yV5yqwVD4',   // ← @BotFather se lo
+    token:     '8593320366:AAE-juWLnOuD4T0OvULH79-mT9cU6dFMAHc',   // ← @BotFather se lo
     channelId: '@AHMIIBOSSBOT',          // ← optional
   },
 
