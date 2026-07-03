@@ -1,15 +1,14 @@
 // ============================================
 //    AHMII BAJWA BOT — TELEGRAM/HANDLERS.JS
+//     Telegram Message & Command Handlers
 // ============================================
 
 'use strict';
 
-const config = require('../config/config');
+const config      = require('../config/config');
+const { toSmallCaps } = require('../utils/fonts');
 const pairManager = require('../pair/pairManager');
 const sessionManager = require('../core/session');
-
-// Safe fallback (fonts remove kar diya crash avoid karne ke liye)
-const toSmallCaps = (text) => text;
 
 // ─── /start Handler ───────────────────────────
 const handleStart = async (bot, chatId, userId, firstName, verifiedUsers) => {
@@ -17,88 +16,139 @@ const handleStart = async (bot, chatId, userId, firstName, verifiedUsers) => {
   const alreadyVerified = verifiedUsers.get(userId);
 
   const welcomeText =
-`🤖 Welcome to Badshah MD Bot!
+`🤖 *Welcome to ${toSmallCaps('badshah md')} Bot!*
 
-Hello ${firstName} 👋
+Hello *${firstName}* 👋
 
-THIS IS SHEHRYAR MD BOT
+THIS IS SHEHRYAR MD BOT & THIS HAS SO MANY FEATURES & THIS BOT MADE BY SHEHRYAR & ZAIN
 
 ━━━━━━━━━━━━━━━━━━━━
-👨‍💻 Developer: Badshah
-🔖 Version: ${config.version}
+👨‍💻 *Developer:* ${toSmallCaps('Badshah')}
+🔖 *Version:* ${config.version}
 ━━━━━━━━━━━━━━━━━━━━
 
 ${alreadyVerified ? '✅ You are already verified!' : '🔐 Please verify below to continue 👇'}`;
 
+  // ─── Inline Buttons ───────────────────────
   const keyboard = alreadyVerified
     ? {
         inline_keyboard: [
           [
-            { text: 'CHANNEL 1', url: config.channels.channel1 },
-            { text: 'CHANNEL 2', url: config.channels.channel2 },
+            { text: '📢 ᴡʜᴀᴛꜱᴀᴘᴘ ᴄʜᴀɴɴᴇʟ 1', url: config.channels.channel1 },
+            { text: '📢 ᴡʜᴀᴛꜱᴀᴘᴘ ᴄʜᴀɴɴᴇʟ 2', url: config.channels.channel2 },
           ],
         ],
       }
     : {
         inline_keyboard: [
           [
-            { text: 'VERIFY', callback_data: 'verify' },
+            { text: '✅ ᴠᴇʀɪꜰʏ', callback_data: 'verify' },
           ],
           [
-            { text: 'CHANNEL 1', url: config.channels.channel1 },
-            { text: 'CHANNEL 2', url: config.channels.channel2 },
+            { text: '📢 ᴄʜᴀɴɴᴇʟ 1', url: config.channels.channel1 },
+            { text: '📢 ᴄʜᴀɴɴᴇʟ 2', url: config.channels.channel2 },
           ],
         ],
       };
 
   await bot.sendMessage(chatId, welcomeText, {
+    parse_mode:   'Markdown',
     reply_markup: keyboard,
   });
 };
 
-// ─── Verify Handler ───────────────────────────
+// ─── After Verify Handler ─────────────────────
 const handleVerify = async (bot, chatId, firstName) => {
 
   const text =
-`✅ Verification Successful!
+`✅ *Verification Successful!*
 
-Welcome ${firstName}!
-You now have full access.
+Welcome *${firstName}*! You now have full access to *${toSmallCaps('Badshah md')}* bot.
 
-Commands:
-/reqpair <number>
-/help
-/status`;
+━━━━━━━━━━━━━━━━━━━━
+📋 *Available Commands:*
 
-  await bot.sendMessage(chatId, text);
+🔗 /reqpair \`<number>\` — Connect WhatsApp
+❓ /help — Show all commands
+📊 /status — Bot status
+━━━━━━━━━━━━━━━━━━━━
+
+*Example:*
+\`/reqpair 923001234567\`
+_(Include country code, no + or spaces)_`;
+
+  await bot.sendMessage(chatId, text, {
+    parse_mode: 'Markdown',
+  });
 };
 
-// ─── Help Handler ────────────────────────────
+// ─── /help Handler ────────────────────────────
 const handleHelp = async (bot, chatId) => {
 
   const text =
-`HELP MENU
+`📖 *${toSmallCaps('Badshah md')} — Help Menu*
 
-/start - Start bot
-/reqpair <number> - Pair WhatsApp
-/status - Bot status
-/help - Help menu`;
+━━━━━━━━━━━━━━━━━━━━
+🤖 *Telegram Commands:*
 
-  await bot.sendMessage(chatId, text);
+/start — Start the bot
+/reqpair \`<number>\` — Generate WhatsApp pairing code
+/status — Check active connections
+/help — Show this menu
+
+━━━━━━━━━━━━━━━━━━━━
+📱 *WhatsApp Commands:*
+
+Type *.menu* on WhatsApp to see all available commands.
+
+━━━━━━━━━━━━━━━━━━━━
+📝 *How to Connect:*
+
+1️⃣ Send \`/reqpair 923001234567\`
+2️⃣ Copy the pairing code
+3️⃣ Open WhatsApp → Settings → Linked Devices
+4️⃣ Link a Device → Link with Phone Number
+5️⃣ Enter the pairing code
+
+⏰ Code expires in *2 minutes*
+
+━━━━━━━━━━━━━━━━━━━━
+👨‍💻 *Developer:* ${toSmallCaps('Badshah')}`;
+
+  await bot.sendMessage(chatId, text, {
+    parse_mode: 'Markdown',
+  });
 };
 
-// ─── Status Handler ──────────────────────────
+// ─── /status Handler ──────────────────────────
 const handleStatus = async (bot, chatId) => {
 
+  const activeCount  = pairManager.activeCount();
+  const pendingCount = pairManager.pendingCount();
+  const sessionCount = sessionManager.count();
+  const uptime       = Math.floor(process.uptime());
+  const uptimeStr    = `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${uptime % 60}s`;
+
   const text =
-`BOT STATUS
+`📊 *${toSmallCaps('Badshah md')} — Bot Status*
 
-Active: ${pairManager.activeCount()}
-Pending: ${pairManager.pendingCount()}
-Sessions: ${sessionManager.count()}
-Uptime: ${Math.floor(process.uptime())}s`;
+━━━━━━━━━━━━━━━━━━━━
+🟢 *Status:* Online
+⚡ *Version:* ${config.version}
+⏱️ *Uptime:* ${uptimeStr}
 
-  await bot.sendMessage(chatId, text);
+━━━━━━━━━━━━━━━━━━━━
+📱 *Connections:*
+✅ Active:  ${activeCount}
+⏳ Pending: ${pendingCount}
+💾 Sessions: ${sessionCount}
+
+━━━━━━━━━━━━━━━━━━━━
+👨‍💻 *Developer:* ${toSmallCaps('Badshah')}`;
+
+  await bot.sendMessage(chatId, text, {
+    parse_mode: 'Markdown',
+  });
 };
 
 module.exports = {
