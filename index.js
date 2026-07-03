@@ -56,7 +56,7 @@ try {
   initTelegram(telegramBot);
   logger.success('Telegram handlers loaded.');
 } catch (err) {
-  logger.error('Failed to load Telegram handlers:', err.message);
+  console.error(err);
   process.exit(1);
 }
 
