@@ -65,10 +65,10 @@ const config = {
   },
 
   // ─── Logging ─────────────────────────────────
-  logLevel: 'info',       // 'info' | 'debug' | 'warn' | 'error'
+logLevel: 'info',
 
-  // ─── Web Server Port ─────────────────────────
-  port: 3000,
+// ─── Web Server Port ─────────────────────────
+port: 3000,
 
   // ─── Assets ──────────────────────────────────
   assets: {
